@@ -4,9 +4,8 @@ import subprocess
 from telebot import types
 
 # Railway-র Environment Variables থেকে টোকেন নেওয়া
-TOKEN = os.environ.get('BOT_TOKEN')
+TOKEN = '8844506424:AAGVpY6nOxxM-VR0kmHHIRzSBYzlWSiTcHI'
 bot = telebot.TeleBot(TOKEN)
-
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
