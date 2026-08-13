@@ -3,9 +3,10 @@ import telebot
 import subprocess
 from telebot import types
 
-# Railway-র Environment Variables থেকে টোকেন নেওয়া
+# সরাসরি টোকেন এখানে বসানো আছে
 TOKEN = '8844506424:AAGVpY6nOxxM-VR0kmHHIRzSBYzlWSiTcHI'
 bot = telebot.TeleBot(TOKEN)
+
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, resize_keyboard=True)
@@ -66,6 +67,5 @@ def handle_video(message):
         bot.reply_to(message, f"দুঃখিত, একটি সমস্যা হয়েছে: {str(e)}")
 
 if __name__ == '__main__':
-    bot.remove_webhook()
     print("Bot is running...")
     bot.infinity_polling(skip_pending=True)
