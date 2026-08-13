@@ -3,8 +3,8 @@ import telebot
 import subprocess
 from telebot import types
 
-# সরাসরি টোকেন এখানে বসানো আছে
-TOKEN = '8844506424:AAGVpY6nOxxM-VR0kmHHIRzSBYzlWSiTcHI'
+# নতুন এবং সঠিক টোকেন এখানে বসানো হলো
+TOKEN = '8844506424:AAEbzTkcruoF0uN41Is-uS_6Z0pptmDGWI0'
 bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start', 'help'])
