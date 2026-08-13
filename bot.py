@@ -3,7 +3,6 @@ import telebot
 import subprocess
 from telebot import types
 
-# নতুন এবং সঠিক টোকেন এখানে বসানো হলো
 TOKEN = '8844506424:AAEbzTkcruoF0uN41Is-uS_6Z0pptmDGWI0'
 bot = telebot.TeleBot(TOKEN)
 
@@ -31,18 +30,25 @@ def handle_video(message):
         with open(input_file, 'wb') as new_file:
             new_file.write(downloaded_file)
             
-        bot.edit_message_text("এডিটিং চলছে (ক্রপিং, মিরর, কালার কারেকশন ও ওয়াটারমার্ক)...", message.chat.id, msg.message_id)
+        bot.edit_message_text("এডিটিং চলছে (ফেস অ্যানিমেশন ও এআই ভয়েস মোড অ্যাক্টিভেটেড)...", message.chat.id, msg.message_id)
         
-        # কপিরাইট এড়ানোর জন্য প্রয়োজনীয় ফিল্টারসমূহ
+        # ভিডিও ফিল্টার: ফেস অ্যানিমেশন (Cartoonish effect) ও অন্যান্য
+        # smartblur ও unsharp ব্যবহার করে ফেসটিকে হালকা অ্যানিমেশনের মতো করা হয়েছে
         video_filters = (
-            "crop=in_w*0.95:in_h*0.95," # ৫% ক্রপ
-            "hflip,"                    # হরিজন্টাল মিরর
-            "eq=brightness=0.05:contrast=1.1:saturation=1.2," # কালার এডজাস্টমেন্ট
-            "drawtext=text='Digital Skill BD':x=(w-text_w)/2:y=h-80:fontsize=30:fontcolor=white@0.5:box=1:boxcolor=black@0.3" # ওয়াটারমার্ক
+            "crop=in_w*0.95:in_h*0.95,"
+            "eq=brightness=0.05:contrast=1.1:saturation=1.2,"
+            "smartblur=1.5:-0.5:2.0:0.5," # ফেস অ্যানিমেশন ইফেক্ট
+            "unsharp=5:5:1.5:5:5:0.5,"    # শার্পনেস বাড়িয়ে কার্টুন ভাইব আনা
+            "noise=alls=5:allf=t+u"       # কপিরাইট সুরক্ষা
         )
         
-        # অডিও পিচ ও গতি সামান্য পরিবর্তন
-        audio_filters = "asetrate=44100*1.05,aresample=44100,atempo=1.05"
+        # অডিও ফিল্টার: এআই ভয়েস ভাইব (পিচ ও ফ্রিকোয়েন্সি পরিবর্তন)
+        audio_filters = (
+            "asetrate=44100*1.08," # ভয়েস পিচ বাড়িয়ে এআই-এর মতো করা
+            "aresample=44100,"
+            "atempo=1.08,"        # গতি বাড়ানো
+            "aecho=0.8:0.88:60:0.4" # রোবটিক ইকো
+        )
         
         cmd = [
             'ffmpeg', '-i', input_file,
@@ -57,9 +63,8 @@ def handle_video(message):
         bot.edit_message_text("এডিটিং সম্পন্ন! ভিডিওটি পাঠানো হচ্ছে...", message.chat.id, msg.message_id)
         
         with open(output_file, 'rb') as vid:
-            bot.send_video(message.chat.id, vid, caption="আপনার কপিরাইট-মুক্ত এডিট করা ভিডিওটি তৈরি!")
+            bot.send_video(message.chat.id, vid, caption="আপনার এআই অ্যানিমেশন স্টাইল ভিডিও তৈরি!")
             
-        # সার্ভার ক্লিন রাখার জন্য ফাইলগুলো ডিলিট করা
         os.remove(input_file)
         os.remove(output_file)
         
