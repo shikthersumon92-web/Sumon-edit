@@ -19,7 +19,7 @@ def prompt_upload(message):
 @bot.message_handler(content_types=['video'])
 def handle_video(message):
     try:
-        msg = bot.reply_to(message, "ভিডিও ডাউনলোড হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...")
+        msg = bot.reply_to(message, "ভিডিও ডাউনলোড হচ্ছে, এডিটিং শুরু হচ্ছে...")
         
         file_info = bot.get_file(message.video.file_id)
         downloaded_file = bot.download_file(file_info.file_path)
@@ -30,24 +30,24 @@ def handle_video(message):
         with open(input_file, 'wb') as new_file:
             new_file.write(downloaded_file)
             
-        bot.edit_message_text("এডিটিং চলছে (ফেস অ্যানিমেশন ও এআই ভয়েস মোড অ্যাক্টিভেটেড)...", message.chat.id, msg.message_id)
-        
-        # ভিডিও ফিল্টার: ফেস অ্যানিমেশন (Cartoonish effect) ও অন্যান্য
-        # smartblur ও unsharp ব্যবহার করে ফেসটিকে হালকা অ্যানিমেশনের মতো করা হয়েছে
+        # ভিডিও ফিল্টার (ফেস অ্যানিমেশন ইফেক্ট সহ)
+        # setpts=1/1.07*PTS দিয়ে ভিডিওর গতি অডিওর সাথে সিঙ্ক করা হয়েছে
         video_filters = (
             "crop=in_w*0.95:in_h*0.95,"
             "eq=brightness=0.05:contrast=1.1:saturation=1.2,"
-            "smartblur=1.5:-0.5:2.0:0.5," # ফেস অ্যানিমেশন ইফেক্ট
-            "unsharp=5:5:1.5:5:5:0.5,"    # শার্পনেস বাড়িয়ে কার্টুন ভাইব আনা
-            "noise=alls=5:allf=t+u"       # কপিরাইট সুরক্ষা
+            "smartblur=1.5:-0.5:2.0:0.5," # ফেস অ্যানিমেশন বা কার্টুন লুক
+            "unsharp=5:5:1.5:5:5:0.5,"    # শার্পনেস বাড়িয়ে কার্টুন ভাইব
+            "noise=alls=5:allf=t+u,"      # কপিরাইট সুরক্ষা গ্রেইন
+            "setpts=1/1.07*PTS"           # ভিডিও স্পিড অডিওর সাথে সিঙ্ক
         )
         
-        # অডিও ফিল্টার: এআই ভয়েস ভাইব (পিচ ও ফ্রিকোয়েন্সি পরিবর্তন)
+        # অডিও ফিল্টার (এআই ভয়েস ইফেক্ট সহ)
         audio_filters = (
-            "asetrate=44100*1.08," # ভয়েস পিচ বাড়িয়ে এআই-এর মতো করা
+            "highpass=f=200,lowpass=f=3000," 
+            "atempo=1.07,"        # অডিওর গতি ১০৭%
+            "asetrate=44100*1.07," # পিচ বাড়িয়ে রোবটিক/এআই ভয়েস
             "aresample=44100,"
-            "atempo=1.08,"        # গতি বাড়ানো
-            "aecho=0.8:0.88:60:0.4" # রোবটিক ইকো
+            "aecho=0.8:0.88:60:0.4"
         )
         
         cmd = [
@@ -60,7 +60,7 @@ def handle_video(message):
         
         subprocess.run(cmd, check=True)
         
-        bot.edit_message_text("এডিটিং সম্পন্ন! ভিডিওটি পাঠানো হচ্ছে...", message.chat.id, msg.message_id)
+        bot.edit_message_text("এডিটিং সম্পন্ন! ভিডিও পাঠানো হচ্ছে...", message.chat.id, msg.message_id)
         
         with open(output_file, 'rb') as vid:
             bot.send_video(message.chat.id, vid, caption="আপনার এআই অ্যানিমেশন স্টাইল ভিডিও তৈরি!")
@@ -69,7 +69,7 @@ def handle_video(message):
         os.remove(output_file)
         
     except Exception as e:
-        bot.reply_to(message, f"দুঃখিত, একটি সমস্যা হয়েছে: {str(e)}")
+        bot.reply_to(message, f"দুঃখিত, ফাইলটি অনেক বড় বা অন্য সমস্যা হয়েছে: {str(e)}")
 
 if __name__ == '__main__':
     print("Bot is running...")
