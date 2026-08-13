@@ -3,8 +3,7 @@ import telebot
 import subprocess
 
 # Telegram Bot Token
-TOKEN = 8844506424:AAH-UeFYjmchlaPNhT4Rk1vmqmnbGNWAp44
-bot = telebot.TeleBot(TOKEN)
+bot = telebot.TeleBot TOKEN =8844506424:AAH-UeFYjmchlaPNhT4Rk1vmqmnbGNWAp44
 
 @bot.message_handler(commands=['start', 'help'])
 def send_welcome(bot_message):
